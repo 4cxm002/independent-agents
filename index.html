@@ -1,0 +1,123 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Block Taming</title>
+  <script src="phaser.js"></script>
+</head>
+<body style="margin: 0px;">
+
+  <script type="text/javascript">
+
+    window.onload = function () {
+
+      var game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+      var wildBlocks, tamedBlocks;
+      var tamingStarted = false;
+
+      function preload() {
+
+        game.load.image('untamed', 'assets/untamed.png');
+        game.load.image('tamed', 'assets/tamed.png');
+
+      }
+
+      function create() {
+
+        game.physics.startSystem(Phaser.Physics.ARCADE);
+
+        wildBlocks = game.add.group();
+
+        tamedBlocks = game.add.group();
+
+        tamedBlocks.enableBody = true;
+        wildBlocks.enableBody = true;
+
+        for (var i = 0; i < 20; i++) {
+          createBlock(wildBlocks);
+        }
+      }
+
+      function update() {
+        game.physics.arcade.collide(wildBlocks, tamedBlocks, function (wild, tamed) {
+          tameBlock(wild);
+        });
+        game.physics.arcade.collide(wildBlocks, wildBlocks);
+        game.physics.arcade.collide(tamedBlocks, tamedBlocks);
+
+        tamedBlocks.forEach(function (block) {
+          block.think();
+        });
+
+        wildBlocks.forEach(function (block) {
+          block.think();
+        });
+      }
+
+      function createBlock(group) {
+
+        var randomX, randomY;
+
+        do {
+          randomX = Math.random() * (game.world.width - 100) + 50;
+          randomY = Math.random() * (game.world.height - 100) + 50;
+        } while (game.physics.arcade.getObjectsAtLocation(randomX, randomY, wildBlocks).length > 0 ||
+                 game.physics.arcade.getObjectsAtLocation(randomX + 32, randomY, wildBlocks).length > 0 ||
+                 game.physics.arcade.getObjectsAtLocation(randomX, randomY + 32, wildBlocks).length > 0 ||
+                 game.physics.arcade.getObjectsAtLocation(randomX + 32, randomY + 32, wildBlocks).length > 0);
+
+        var newBlock = group.create(randomX, randomY, 'untamed');
+
+        newBlock.body.bounce.y = 0.2;
+        newBlock.body.bounce.x = 0.2;
+        newBlock.body.collideWorldBounds = true;
+        newBlock.body.maxVelocity.x = 200;
+        newBlock.body.maxVelocity.y = 200;
+        
+        newBlock.inputEnabled = true;
+
+        newBlock.events.onInputDown.add(function () {
+          if (!tamingStarted) {
+
+            tameBlock(newBlock);            
+            tamingStarted = true;
+
+          }
+        }, this);
+
+        //Custom properties
+        newBlock.tamed = false;
+        newBlock.changeAcceleration = 100;
+        newBlock.think = untamedThought;
+      };
+
+      function tameBlock(block) {
+        wildBlocks.remove(block);
+        block.loadTexture('tamed', 0);
+        tamedBlocks.add(block);
+        block.tamed = true;
+        block.think = tameThought;
+      };
+
+      function tameThought() {
+        if (this.body.acceleration.x == 0 || this.changeAcceleration-- <= 0) {
+          this.body.acceleration.x = Math.random() * 50 - 25;
+          this.body.acceleration.y = Math.random() * 50 - 25;
+          this.changeAcceleration = 100;
+        }
+      };
+
+      function untamedThought() {
+        if (this.body.acceleration.x == 0 || this.changeAcceleration-- <= 0) {
+          this.body.acceleration.x = Math.random() * 5 - 2.5;
+          this.body.acceleration.y = Math.random() * 5 - 2.5;
+          this.changeAcceleration = 200;
+        }
+      };
+
+    };
+
+  </script>
+
+</body>
+</html>
