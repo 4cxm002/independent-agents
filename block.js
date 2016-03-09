@@ -36,17 +36,18 @@ var BlockTaming;
             //Custom properties
             this.tamed = false;
             this.changeAcceleration = 100;
+            this.think = this.untamedThought;
         }
         Block.prototype.update = function () {
             _super.prototype.update.call(this);
-            if (this.tamed) {
-                this.tameThought();
-            }
-            else {
-                this.untamedThought();
-            }
+            this.think();
         };
-        Block.prototype.tameThought = function () {
+        Block.prototype.tame = function () {
+            this.loadTexture('tamed', 0);
+            this.think = this.tamedThought;
+            this.tamed = true;
+        };
+        Block.prototype.tamedThought = function () {
             if (this.body.acceleration.x == 0 || this.changeAcceleration-- <= 0) {
                 this.body.acceleration.x = Math.random() * 50 - 25;
                 this.body.acceleration.y = Math.random() * 50 - 25;

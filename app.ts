@@ -28,11 +28,9 @@
         }
 
         tameBlock(block: Block) {
+            block.tame();
             this.wildBlocks.remove(block);
-            block.loadTexture('tamed', 0);
             this.tamedBlocks.add(block);
-            block.tamed = true;
-            
         }
 
         create() {
@@ -54,8 +52,9 @@
 
 
         update() {
+            var self = this;
             this.physics.arcade.collide(this.wildBlocks, this.tamedBlocks, function (wild, tamed) {
-                this.tameBlock(wild);
+                self.tameBlock(wild);
             });
             this.physics.arcade.collide(this.wildBlocks, this.wildBlocks);
             this.physics.arcade.collide(this.tamedBlocks, this.tamedBlocks);

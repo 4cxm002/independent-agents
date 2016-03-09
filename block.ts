@@ -3,6 +3,7 @@
 
         changeAcceleration: number;
         tamed: boolean;
+        think: () => void;
 
         constructor(arena: Arena) {
 
@@ -32,8 +33,7 @@
             self = this;
 
             this.events.onInputDown.add(function () {
-                if (!arena.tamingStarted) {
-
+                if (!arena.tamingStarted) {                    
                     arena.tameBlock(self);
                     arena.tamingStarted = true;
 
@@ -43,19 +43,21 @@
             //Custom properties
             this.tamed = false;
             this.changeAcceleration = 100;
-
+            this.think = this.untamedThought;
         }
 
         update() {
             super.update();
-            if (this.tamed) {
-                this.tameThought();
-            } else {
-                this.untamedThought();
-            }
+            this.think();            
         }
 
-        tameThought() {
+        tame() {
+            this.loadTexture('tamed', 0);
+            this.think = this.tamedThought;
+            this.tamed = true;            
+        }
+
+        tamedThought() {
             if (this.body.acceleration.x == 0 || this.changeAcceleration-- <= 0) {
                 this.body.acceleration.x = Math.random() * 50 - 25;
                 this.body.acceleration.y = Math.random() * 50 - 25;

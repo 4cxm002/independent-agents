@@ -26,10 +26,9 @@ var BlockTaming;
             this.load.image('tamed', 'assets/tamed.png');
         };
         Arena.prototype.tameBlock = function (block) {
+            block.tame();
             this.wildBlocks.remove(block);
-            block.loadTexture('tamed', 0);
             this.tamedBlocks.add(block);
-            block.tamed = true;
         };
         Arena.prototype.create = function () {
             this.physics.startSystem(Phaser.Physics.ARCADE);
@@ -43,8 +42,9 @@ var BlockTaming;
             this.tamingStarted = false;
         };
         Arena.prototype.update = function () {
+            var self = this;
             this.physics.arcade.collide(this.wildBlocks, this.tamedBlocks, function (wild, tamed) {
-                this.tameBlock(wild);
+                self.tameBlock(wild);
             });
             this.physics.arcade.collide(this.wildBlocks, this.wildBlocks);
             this.physics.arcade.collide(this.tamedBlocks, this.tamedBlocks);
