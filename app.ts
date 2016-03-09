@@ -44,7 +44,7 @@
             this.wildBlocks.enableBody = true;
 
             for (var i = 0; i < 20; i++) {
-                this.wildBlocks.add(new Block(this, Math.random() * 400, Math.random() * 100));
+                this.wildBlocks.add(new Block(this, Math.random() * 400, Math.random() * 100, Math.random() * 200));
             }
             this.tamingStarted = false;
         }
