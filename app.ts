@@ -1,61 +1,70 @@
-﻿/// <reference path="phaser.d.ts"/>
+﻿module BlockTaming {
 
-class SimpleGame {
+    export class SimpleGame extends Phaser.Game {
 
-    constructor() {
-        this.game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.AUTO, '', { preload: this.preload, create: this.create, update: this.update });
-    }
+        constructor() {
 
-    game: Phaser.Game;
-    wildBlocks: Phaser.Group;
-    tamedBlocks: Phaser.Group;
-    tamingStarted: boolean;
+            super(window.innerWidth, window.innerHeight, Phaser.AUTO, '');
 
-    preload() {
+            this.state.add('Arena', Arena, false);
 
-        this.game.load.image('untamed', 'assets/untamed.png');
-        this.game.load.image('tamed', 'assets/tamed.png');
+            this.state.start('Arena');
 
-    }
-
-    create() {
-
-        this.game.physics.startSystem(Phaser.Physics.ARCADE);
-
-        this.wildBlocks = this.game.add.group();
-
-        this.tamedBlocks = this.game.add.group();
-
-        this.tamedBlocks.enableBody = true;
-        this.wildBlocks.enableBody = true;
-
-        for (var i = 0; i < 20; i++) {
-            this.wildBlocks.add(new Block(this, this.game));
         }
-        this.tamingStarted = false;
-    }
-
-    update() {
-        this.game.physics.arcade.collide(this.wildBlocks, this.tamedBlocks, function (wild, tamed) {
-            this.tameBlock(wild);
-        });
-        this.game.physics.arcade.collide(this.wildBlocks, this.wildBlocks);
-        this.game.physics.arcade.collide(this.tamedBlocks, this.tamedBlocks);
-    }
-
-    tameBlock(block: Block) {
-        this.wildBlocks.remove(block);
-        block.loadTexture('tamed', 0);
-        this.tamedBlocks.add(block);
-        block.tamed = true;        
     }
 
 
+    export class Arena extends Phaser.State {
 
+        wildBlocks: Phaser.Group;
+        tamedBlocks: Phaser.Group;
+        tamingStarted: boolean;
+
+        preload() {
+
+            this.load.image('untamed', 'assets/untamed.png');
+            this.load.image('tamed', 'assets/tamed.png');
+
+        }
+
+        tameBlock(block: Block) {
+            this.wildBlocks.remove(block);
+            block.loadTexture('tamed', 0);
+            this.tamedBlocks.add(block);
+            block.tamed = true;
+            
+        }
+
+        create() {
+
+            this.physics.startSystem(Phaser.Physics.ARCADE);
+
+            this.wildBlocks = this.add.group();
+
+            this.tamedBlocks = this.add.group();
+
+            this.tamedBlocks.enableBody = true;
+            this.wildBlocks.enableBody = true;
+
+            for (var i = 0; i < 20; i++) {
+                this.wildBlocks.add(new Block(this));
+            }
+            this.tamingStarted = false;
+        }
+
+
+        update() {
+            this.physics.arcade.collide(this.wildBlocks, this.tamedBlocks, function (wild, tamed) {
+                this.tameBlock(wild);
+            });
+            this.physics.arcade.collide(this.wildBlocks, this.wildBlocks);
+            this.physics.arcade.collide(this.tamedBlocks, this.tamedBlocks);
+        }
+
+    }
 }
-
 window.onload = () => {
 
-    var game = new SimpleGame();
+    var game = new BlockTaming.SimpleGame();
 
 };
