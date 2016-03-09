@@ -1,6 +1,0 @@
-C:\Users\cmoore2\Documents\GitHub\independent-agents\bin\BlockTaming.dll.config
-C:\Users\cmoore2\Documents\GitHub\independent-agents\bin\BlockTaming.dll
-C:\Users\cmoore2\Documents\GitHub\independent-agents\bin\BlockTaming.pdb
-C:\Users\cmoore2\Documents\GitHub\independent-agents\obj\Debug\BlockTaming.csprojResolveAssemblyReference.cache
-C:\Users\cmoore2\Documents\GitHub\independent-agents\obj\Debug\BlockTaming.dll
-C:\Users\cmoore2\Documents\GitHub\independent-agents\obj\Debug\BlockTaming.pdb
