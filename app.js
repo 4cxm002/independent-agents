@@ -25,8 +25,7 @@ var BlockTaming;
             this.load.image('untamed', 'assets/untamed.png');
             this.load.image('tamed', 'assets/tamed.png');
         };
-        Arena.prototype.tameBlock = function (block) {
-            block.tame();
+        Arena.prototype.moveToTamed = function (block) {
             this.wildBlocks.remove(block);
             this.tamedBlocks.add(block);
         };
@@ -37,14 +36,14 @@ var BlockTaming;
             this.tamedBlocks.enableBody = true;
             this.wildBlocks.enableBody = true;
             for (var i = 0; i < 20; i++) {
-                this.wildBlocks.add(new BlockTaming.Block(this));
+                this.wildBlocks.add(new BlockTaming.Block(this, Math.random() * 400, Math.random() * 100));
             }
             this.tamingStarted = false;
         };
         Arena.prototype.update = function () {
             var self = this;
             this.physics.arcade.collide(this.wildBlocks, this.tamedBlocks, function (wild, tamed) {
-                self.tameBlock(wild);
+                wild.tame();
             });
             this.physics.arcade.collide(this.wildBlocks, this.wildBlocks);
             this.physics.arcade.collide(this.tamedBlocks, this.tamedBlocks);

@@ -27,8 +27,7 @@
 
         }
 
-        tameBlock(block: Block) {
-            block.tame();
+        moveToTamed(block: Block) {
             this.wildBlocks.remove(block);
             this.tamedBlocks.add(block);
         }
@@ -45,7 +44,7 @@
             this.wildBlocks.enableBody = true;
 
             for (var i = 0; i < 20; i++) {
-                this.wildBlocks.add(new Block(this));
+                this.wildBlocks.add(new Block(this, Math.random() * 400, Math.random() * 100));
             }
             this.tamingStarted = false;
         }
@@ -53,8 +52,8 @@
 
         update() {
             var self = this;
-            this.physics.arcade.collide(this.wildBlocks, this.tamedBlocks, function (wild, tamed) {
-                self.tameBlock(wild);
+            this.physics.arcade.collide(this.wildBlocks, this.tamedBlocks, function (wild: Block, tamed: Block) {
+                wild.tame();
             });
             this.physics.arcade.collide(this.wildBlocks, this.wildBlocks);
             this.physics.arcade.collide(this.tamedBlocks, this.tamedBlocks);
