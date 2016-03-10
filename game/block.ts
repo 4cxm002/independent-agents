@@ -16,7 +16,8 @@
         changeAcceleration: number;
         tamed: boolean;
         
-        target: Block;
+        target: BaseObject;
+        closestFood: BaseObject;
 
         mouth: Phaser.Sprite;
 
@@ -81,11 +82,11 @@
             }
         }
 
-        spotTarget(group: Phaser.Group): Block {
-            var target: Block;
+        spotTarget(group: Phaser.Group): BaseObject {
+            var target: BaseObject;
             var shortestDistance = this.sight;
 
-            group.forEachAlive((member: Block) => {
+            group.forEachAlive((member: BaseObject) => {
                 var distance = Math.abs(this.game.physics.arcade.distanceBetween(this, member));                
                 if (distance < shortestDistance) {
                     var angleBetween = Phaser.Math.radToDeg(this.game.physics.arcade.angleBetween(this, member));
@@ -106,23 +107,33 @@
 
         chaseBehavior() {
             var target = this.spotTarget(this.arena.wildBlocks);
+            var closestFood = this.spotTarget(this.arena.foodPellets);
 
             this.target = target;
+            this.closestFood = closestFood;
 
-            if (target) {
+            var closestTargetDistance = target == null ? null : Math.abs(this.game.physics.arcade.distanceBetween(this, target));
+            var closestFoodDistance = closestFood == null ? null : Math.abs(this.game.physics.arcade.distanceBetween(this, closestFood));
+
+            if (target && closestTargetDistance <= closestFoodDistance) {
                 this.game.physics.arcade.accelerateToObject(this, target, this.acceleration, this.maxSpeed, this.maxSpeed);
                 this.game.debug.text("Target acquired", 32, 32);
                 this.rotateBehavior(target, false);
-            } else {
+            } else if (closestFood && closestFoodDistance <= closestTargetDistance) {
+                this.game.physics.arcade.accelerateToObject(this, closestFood, this.acceleration, this.maxSpeed, this.maxSpeed);
+                this.game.debug.text("Food acquired", 32, 32);
+                this.rotateBehavior(closestFood, false);
+            }
+                else {
                 if (this.body.acceleration.x == 0 || this.changeAcceleration-- <= 0) {
                     this.body.acceleration.x = Math.random() * this.acceleration - (this.acceleration / 2);
                     this.body.acceleration.y = Math.random() * this.acceleration - (this.acceleration / 2);
                     this.changeAcceleration = 200;
                 }
+            }
                 //var body = <Phaser.Physics.Arcade.Body>this.body;
                 //body.acceleration.multiply(0, 0);
                 //body.velocity.multiply(0, 0);
-            }
         }          
 
         fleeBehavior() {
