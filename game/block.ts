@@ -144,10 +144,10 @@
 
         rotateBehavior(destination: any, isRunningAway: boolean) {
             if (isRunningAway) {
-                this.rotation = this.game.physics.arcade.angleBetween(this, destination) - 90;
+                this.rotation = this.game.physics.arcade.angleBetween(this, destination) - (Math.PI / 2);
             }
             else {
-                this.rotation = this.game.physics.arcade.angleBetween(this, destination) + 90;
+                this.rotation = this.game.physics.arcade.angleBetween(this, destination) + (Math.PI / 2);
             }
         }
     }
