@@ -24,6 +24,7 @@ var BlockTaming;
         Arena.prototype.preload = function () {
             this.load.image('untamed', 'assets/untamed.png');
             this.load.image('tamed', 'assets/tamed.png');
+            this.load.image('foodPellet', 'assets/foodPellet.png');
         };
         Arena.prototype.moveToTamed = function (block) {
             this.wildBlocks.remove(block);
@@ -33,10 +34,15 @@ var BlockTaming;
             this.physics.startSystem(Phaser.Physics.ARCADE);
             this.wildBlocks = this.add.group();
             this.tamedBlocks = this.add.group();
+            this.foodPellets = this.add.group();
             this.tamedBlocks.enableBody = true;
             this.wildBlocks.enableBody = true;
+            this.foodPellets.enableBody = true;
             for (var i = 0; i < 2; i++) {
-                this.wildBlocks.add(new BlockTaming.Block(this, Math.random() * 400, Math.random() * 100, Math.random() * 200));
+                var block = new BlockTaming.Block(this, Math.random() * 400, Math.random() * 100, Math.random() * 200);
+            }
+            for (var i = 0; i < 20; i++) {
+                new BlockTaming.FoodPellet(this, Math.random() * 100);
             }
             this.tamingStarted = false;
         };
@@ -47,6 +53,9 @@ var BlockTaming;
             });
             this.physics.arcade.collide(this.wildBlocks, this.wildBlocks);
             this.physics.arcade.collide(this.tamedBlocks, this.tamedBlocks);
+            this.physics.arcade.collide(this.foodPellets, this.tamedBlocks);
+            this.physics.arcade.collide(this.foodPellets, this.foodPellets);
+            this.physics.arcade.collide(this.foodPellets, this.wildBlocks);
         };
         Arena.prototype.render = function () {
             var _this = this;

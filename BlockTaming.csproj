@@ -18,6 +18,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="app.css" />
+    <Content Include="assets\foodPellet.png" />
     <Content Include="assets\tamed.png" />
     <Content Include="assets\untamed.png" />
     <Content Include="index.html" />
@@ -26,6 +27,8 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="app.ts" />
+    <TypeScriptCompile Include="game\base-object.ts" />
+    <TypeScriptCompile Include="game\food-pellet.ts" />
     <TypeScriptCompile Include="game\block.ts" />
     <TypeScriptCompile Include="engine\p2.d.ts" />
     <TypeScriptCompile Include="engine\phaser.d.ts" />

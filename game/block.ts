@@ -1,5 +1,5 @@
 ﻿module BlockTaming {
-    export class Block extends Phaser.Sprite {
+    export class Block extends BaseObject {
 
         //Relevant stats
         strength: number;
@@ -12,11 +12,9 @@
         gender: number;        
         insanity: number;
 
-
         changeAcceleration: number;
         tamed: boolean;
-        think: () => void;
-        arena: Arena;
+        
         target: Block;
 
         constructor(arena: Arena, maxSpeed: number, acceleration: number, sight: number) {
@@ -31,23 +29,13 @@
                 arena.physics.arcade.getObjectsAtLocation(randomX, randomY + 32, arena.wildBlocks).length > 0 ||
                 arena.physics.arcade.getObjectsAtLocation(randomX + 32, randomY + 32, arena.wildBlocks).length > 0);
 
-            super(arena.game, randomX, randomY, 'untamed');
-
-            arena.wildBlocks.add(this);
-            
+            super(arena, randomX, randomY, 'untamed', arena.wildBlocks);
+                        
             this.body.bounce.y = 0.2;
             this.body.bounce.x = 0.2;
-            this.body.collideWorldBounds = true;
             this.body.maxVelocity.x = maxSpeed;
             this.body.maxVelocity.y = maxSpeed;
-            this.anchor.setTo(0.5, 0.5);
                         
-            this.body.angularAcceleration = 1;
-            
-            this.inputEnabled = true;
-
-            this.input.enableDrag();
-
             var self: Block;
             self = this;
 
@@ -63,15 +51,9 @@
             this.tamed = false;
             this.changeAcceleration = 100;
             this.think = this.fleeBehavior;
-            this.arena = arena;
             this.maxSpeed = maxSpeed;
             this.acceleration = acceleration;
             this.sight = sight;
-        }
-
-        update() {
-            super.update();
-            this.think();            
         }
 
         tame() {
@@ -122,8 +104,7 @@
                 body.acceleration.multiply(0, 0);
                 body.velocity.multiply(0, 0);
             }
-        }
-          
+        }          
 
         fleeBehavior() {
             var target = this.spotTarget(this.arena.tamedBlocks);

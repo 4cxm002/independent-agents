@@ -17,17 +17,11 @@ var BlockTaming;
                 arena.physics.arcade.getObjectsAtLocation(randomX + 32, randomY, arena.wildBlocks).length > 0 ||
                 arena.physics.arcade.getObjectsAtLocation(randomX, randomY + 32, arena.wildBlocks).length > 0 ||
                 arena.physics.arcade.getObjectsAtLocation(randomX + 32, randomY + 32, arena.wildBlocks).length > 0);
-            _super.call(this, arena.game, randomX, randomY, 'untamed');
-            arena.wildBlocks.add(this);
+            _super.call(this, arena, randomX, randomY, 'untamed', arena.wildBlocks);
             this.body.bounce.y = 0.2;
             this.body.bounce.x = 0.2;
-            this.body.collideWorldBounds = true;
             this.body.maxVelocity.x = maxSpeed;
             this.body.maxVelocity.y = maxSpeed;
-            this.anchor.setTo(0.5, 0.5);
-            this.body.angularAcceleration = 1;
-            this.inputEnabled = true;
-            this.input.enableDrag();
             var self;
             self = this;
             this.events.onInputDown.add(function () {
@@ -40,15 +34,10 @@ var BlockTaming;
             this.tamed = false;
             this.changeAcceleration = 100;
             this.think = this.fleeBehavior;
-            this.arena = arena;
             this.maxSpeed = maxSpeed;
             this.acceleration = acceleration;
             this.sight = sight;
         }
-        Block.prototype.update = function () {
-            _super.prototype.update.call(this);
-            this.think();
-        };
         Block.prototype.tame = function () {
             this.loadTexture('tamed', 0);
             this.think = this.chaseBehavior;
@@ -116,7 +105,7 @@ var BlockTaming;
             //this.game.physics.arcade.velocityFromAngle(degrees, this.acceleration, this.body.velocity);
         };
         return Block;
-    })(Phaser.Sprite);
+    })(BlockTaming.BaseObject);
     BlockTaming.Block = Block;
 })(BlockTaming || (BlockTaming = {}));
 //# sourceMappingURL=block.js.map
