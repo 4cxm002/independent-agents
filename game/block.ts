@@ -41,9 +41,13 @@
             this.body.maxVelocity.y = maxSpeed;
 
             //create mouth for eating
-            this.mouth = this.game.add.sprite(-10, -18, 'mouth');
+            this.mouth = this.game.add.sprite(-10, -17, 'mouth');
             this.game.physics.enable(this.mouth, Phaser.Physics.ARCADE);
             this.addChild(this.mouth);
+
+            this.mouth.animations.add('eat', [0, 1, 2, 3, 4, 3, 2, 1, 0, 1, 2, 3, 4, 3, 2, 1, 0, 1, 2, 3, 4, 3, 2, 1, 0]);
+
+            
                         
             var self: Block;
             self = this;
@@ -79,7 +83,11 @@
                 this.energy += pellet.nutrition;
                 this.hunger = Phaser.Math.clamp(100 - this.energy, 0, 100);
                 pellet.kill();
+                this.playBite();
             }
+        }
+        playBite() {
+            this.mouth.animations.play('eat', 75, false);
         }
 
         spotTarget(group: Phaser.Group): BaseObject {

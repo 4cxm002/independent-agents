@@ -26,7 +26,7 @@
             this.load.image('untamed', 'assets/untamed.png');
             this.load.image('tamed', 'assets/tamed.png');
             this.load.image('foodPellet', 'assets/foodPellet.png');
-            this.load.image('mouth', 'assets/mouth.png');
+            this.load.spritesheet('mouth', 'assets/mouth.png',20,10);
 
         }
 
@@ -47,7 +47,7 @@
             this.wildBlocks.enableBody = true;
             this.foodPellets.enableBody = true;
 
-            for (var i = 0; i < 2; i++) {
+            for (var i = 0; i < 20; i++) {
                 var block = new Block(this, Math.random() * 400, Math.random() * 100, Math.random() * 200);
             }
 
@@ -62,7 +62,10 @@
         update() {
             var self = this;
             this.physics.arcade.collide(this.wildBlocks, this.tamedBlocks, function (wild: Block, tamed: Block) {
-                wild.tame();
+                if (tamed.mouth.overlap(wild)) {
+                    tamed.playBite();
+                    wild.tame();
+                }
             });
             this.physics.arcade.collide(this.wildBlocks, this.wildBlocks);
             this.physics.arcade.collide(this.tamedBlocks, this.tamedBlocks);
@@ -83,7 +86,7 @@
                 var circle = new Phaser.Circle(block.x, block.y, block.sight * 2);
                 
                 // Draw debug tools
-                this.game.debug.geom(circle, 'rgba(255,0,0,.5)');
+                this.game.debug.geom(circle, 'rgba(255,0,0,.05)');
             }, this);
 
             this.tamedBlocks.forEachAlive((block: Block) => {
@@ -91,7 +94,7 @@
                 var circle = new Phaser.Circle(block.x, block.y, block.sight * 2);
                 
                 // Draw debug tools
-                this.game.debug.geom(circle, 'rgba(0,255,0,.5)');
+                this.game.debug.geom(circle, 'rgba(0,255,0,.05)');
 
                 if (block.target) {
                     var attn = new Phaser.Circle(block.x, block.y - 30, 20);
