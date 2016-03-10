@@ -20,6 +20,7 @@
         closestFood: BaseObject;
 
         mouth: Phaser.Sprite;
+        sensor: Phaser.Graphics;
 
         constructor(arena: Arena, maxSpeed: number, acceleration: number, sight: number) {
 
@@ -45,9 +46,13 @@
             this.game.physics.enable(this.mouth, Phaser.Physics.ARCADE);
             this.addChild(this.mouth);
 
-            this.mouth.animations.add('eat', [0, 1, 2, 3, 4, 3, 2, 1, 0, 1, 2, 3, 4, 3, 2, 1, 0, 1, 2, 3, 4, 3, 2, 1, 0]);
+            this.mouth.animations.add('eat', [0, 1, 2, 3, 4, 3, 2, 1, 0, 1, 2, 3, 4, 3, 2, 1, 0, 1, 2, 3, 4, 3, 2, 1, 0]);            
 
-
+            this.sensor = this.game.add.graphics(0, 0);
+            this.addChild(this.sensor);
+            this.sensor.beginFill(0xFF3300, .1);
+            this.sensor.arc(0, 0, Math.max(sight - 16, 0), 0, -Math.PI, true);
+            this.sensor.endFill();
 
             var self: Block;
             self = this;
@@ -76,6 +81,11 @@
             this.think = this.chaseBehavior;
             this.tamed = true;
             this.arena.moveToTamed(this);
+
+            this.sensor.clear();
+            this.sensor.beginFill(0x33FF00, .1);
+            this.sensor.arc(0, 0, Math.max(this.sight - 16, 0), 0, -Math.PI, true);
+            this.sensor.endFill();
         }
 
         consume(pellet: FoodPellet) {

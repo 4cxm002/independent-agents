@@ -56,6 +56,8 @@
             }
 
             this.tamingStarted = false;
+            
+            
         }
 
 
@@ -81,28 +83,7 @@
         }
 
         render() {
-            this.wildBlocks.forEachAlive((block: Block) => {
 
-                var circle = new Phaser.Circle(block.x, block.y, block.sight * 2);
-                
-                // Draw debug tools
-                this.game.debug.geom(circle, 'rgba(255,0,0,.05)');
-            }, this);
-
-            this.tamedBlocks.forEachAlive((block: Block) => {
-
-                var circle = new Phaser.Circle(block.x, block.y, block.sight * 2);
-                
-                // Draw debug tools
-                this.game.debug.geom(circle, 'rgba(0,255,0,.05)');
-
-                if (block.target) {
-                    var attn = new Phaser.Circle(block.x, block.y - 30, 20);
-                
-                    // Draw debug tools
-                    this.game.debug.geom(attn, 'rgba(0,0,255,1)');
-                }
-            }, this);
 
         }
 
