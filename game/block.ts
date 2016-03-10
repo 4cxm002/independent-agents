@@ -12,6 +12,7 @@
         gender: number;        
         insanity: number;
 
+
         changeAcceleration: number;
         tamed: boolean;
         think: () => void;
@@ -33,7 +34,7 @@
             super(arena.game, randomX, randomY, 'untamed');
 
             arena.wildBlocks.add(this);
-
+            
             this.body.bounce.y = 0.2;
             this.body.bounce.x = 0.2;
             this.body.collideWorldBounds = true;
@@ -109,6 +110,7 @@
             this.target = target;
 
             if (target) {
+                
                 this.game.physics.arcade.accelerateToObject(this, target, this.acceleration, this.maxSpeed, this.maxSpeed);
             } else {
                 //if (this.body.acceleration.x == 0 || this.changeAcceleration-- <= 0) {
@@ -130,6 +132,7 @@
                 var targetX = this.x - (target.x - this.x);
                 var targetY = this.y - (target.y - this.y);
                 this.game.physics.arcade.accelerateToXY(this, targetX, targetY, this.acceleration, this.maxSpeed, this.maxSpeed);
+                this.rotateBehavior(target);
             } else {
                 if (this.body.acceleration.x == 0 || this.changeAcceleration-- <= 0) {
                     this.body.acceleration.x = Math.random() * (this.acceleration / 10) - (this.acceleration / 2 / 10);
@@ -139,6 +142,14 @@
             }
         };
 
-
+        rotateBehavior(destination: any) {
+            var radians: number;
+            var degrees: number;
+            radians = this.game.physics.arcade.angleBetween(this, destination);
+            degrees = radians * (180 / Math.PI);
+            
+            this.body.angle = degrees;
+            //this.game.physics.arcade.velocityFromAngle(degrees, this.acceleration, this.body.velocity);
+        }
     }
 }

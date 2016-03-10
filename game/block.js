@@ -96,6 +96,7 @@ var BlockTaming;
                 var targetX = this.x - (target.x - this.x);
                 var targetY = this.y - (target.y - this.y);
                 this.game.physics.arcade.accelerateToXY(this, targetX, targetY, this.acceleration, this.maxSpeed, this.maxSpeed);
+                this.rotateBehavior(target);
             }
             else {
                 if (this.body.acceleration.x == 0 || this.changeAcceleration-- <= 0) {
@@ -106,6 +107,14 @@ var BlockTaming;
             }
         };
         ;
+        Block.prototype.rotateBehavior = function (destination) {
+            var radians;
+            var degrees;
+            radians = this.game.physics.arcade.angleBetween(this, destination);
+            degrees = radians * (180 / Math.PI);
+            this.body.angle = degrees;
+            //this.game.physics.arcade.velocityFromAngle(degrees, this.acceleration, this.body.velocity);
+        };
         return Block;
     })(Phaser.Sprite);
     BlockTaming.Block = Block;
