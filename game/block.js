@@ -22,6 +22,10 @@ var BlockTaming;
             this.body.bounce.x = 0.2;
             this.body.maxVelocity.x = maxSpeed;
             this.body.maxVelocity.y = maxSpeed;
+            //create mouth for eating
+            this.mouth = this.game.add.sprite(-10, -18, 'mouth');
+            this.game.physics.enable(this.mouth, Phaser.Physics.ARCADE);
+            this.addChild(this.mouth);
             var self;
             self = this;
             this.events.onInputDown.add(function () {
@@ -37,12 +41,21 @@ var BlockTaming;
             this.maxSpeed = maxSpeed;
             this.acceleration = acceleration;
             this.sight = sight;
+            this.energy = 100;
+            this.hunger = 0;
         }
         Block.prototype.tame = function () {
             this.loadTexture('tamed', 0);
             this.think = this.chaseBehavior;
             this.tamed = true;
             this.arena.moveToTamed(this);
+        };
+        Block.prototype.consume = function (pellet) {
+            if (pellet.overlap(this.mouth)) {
+                this.energy += pellet.nutrition;
+                this.hunger = Phaser.Math.clamp(100 - this.energy, 0, 100);
+                pellet.kill();
+            }
         };
         Block.prototype.spotTarget = function (group) {
             var _this = this;

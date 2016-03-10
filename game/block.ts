@@ -11,11 +11,14 @@
         hunger: number;
         gender: number;        
         insanity: number;
+        energy: number;
 
         changeAcceleration: number;
         tamed: boolean;
         
         target: Block;
+
+        mouth: Phaser.Sprite;
 
         constructor(arena: Arena, maxSpeed: number, acceleration: number, sight: number) {
 
@@ -35,6 +38,11 @@
             this.body.bounce.x = 0.2;
             this.body.maxVelocity.x = maxSpeed;
             this.body.maxVelocity.y = maxSpeed;
+
+            //create mouth for eating
+            this.mouth = this.game.add.sprite(-10, -18, 'mouth');
+            this.game.physics.enable(this.mouth, Phaser.Physics.ARCADE);
+            this.addChild(this.mouth);
                         
             var self: Block;
             self = this;
@@ -46,7 +54,7 @@
 
                 }
             }, this);
-
+            
             //Custom properties
             this.tamed = false;
             this.changeAcceleration = 100;
@@ -54,6 +62,8 @@
             this.maxSpeed = maxSpeed;
             this.acceleration = acceleration;
             this.sight = sight;
+            this.energy = 100;
+            this.hunger = 0;
         }
 
         tame() {
@@ -61,6 +71,14 @@
             this.think = this.chaseBehavior;
             this.tamed = true;
             this.arena.moveToTamed(this);            
+        }
+
+        consume(pellet: FoodPellet) {
+            if (pellet.overlap(this.mouth)) {
+                this.energy += pellet.nutrition;
+                this.hunger = Phaser.Math.clamp(100 - this.energy, 0, 100);
+                pellet.kill();
+            }
         }
 
         spotTarget(group: Phaser.Group): Block {

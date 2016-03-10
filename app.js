@@ -25,6 +25,7 @@ var BlockTaming;
             this.load.image('untamed', 'assets/untamed.png');
             this.load.image('tamed', 'assets/tamed.png');
             this.load.image('foodPellet', 'assets/foodPellet.png');
+            this.load.image('mouth', 'assets/mouth.png');
         };
         Arena.prototype.moveToTamed = function (block) {
             this.wildBlocks.remove(block);
@@ -53,9 +54,13 @@ var BlockTaming;
             });
             this.physics.arcade.collide(this.wildBlocks, this.wildBlocks);
             this.physics.arcade.collide(this.tamedBlocks, this.tamedBlocks);
-            this.physics.arcade.collide(this.foodPellets, this.tamedBlocks);
             this.physics.arcade.collide(this.foodPellets, this.foodPellets);
-            this.physics.arcade.collide(this.foodPellets, this.wildBlocks);
+            this.physics.arcade.collide(this.foodPellets, this.tamedBlocks, function (pellet, block) {
+                block.consume(pellet);
+            });
+            this.physics.arcade.collide(this.foodPellets, this.wildBlocks, function (pellet, block) {
+                block.consume(pellet);
+            });
         };
         Arena.prototype.render = function () {
             var _this = this;
