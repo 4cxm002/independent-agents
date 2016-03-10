@@ -19,6 +19,7 @@
   <ItemGroup>
     <Content Include="app.css" />
     <Content Include="assets\foodPellet.png" />
+    <Content Include="assets\mouth.png" />
     <Content Include="assets\tamed.png" />
     <Content Include="assets\untamed.png" />
     <Content Include="index.html" />

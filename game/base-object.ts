@@ -17,6 +17,7 @@
             this.anchor.setTo(0.5, 0.5);
 
             this.inputEnabled = true;
+            this.inputEnabled = true;
 
             this.input.enableDrag();
 

@@ -26,6 +26,7 @@
             this.load.image('untamed', 'assets/untamed.png');
             this.load.image('tamed', 'assets/tamed.png');
             this.load.image('foodPellet', 'assets/foodPellet.png');
+            this.load.image('mouth', 'assets/mouth.png');
 
         }
 
@@ -65,12 +66,16 @@
             });
             this.physics.arcade.collide(this.wildBlocks, this.wildBlocks);
             this.physics.arcade.collide(this.tamedBlocks, this.tamedBlocks);
-            this.physics.arcade.collide(this.foodPellets, this.tamedBlocks);
+
             this.physics.arcade.collide(this.foodPellets, this.foodPellets);
-            this.physics.arcade.collide(this.foodPellets, this.wildBlocks);
+
+            this.physics.arcade.collide(this.foodPellets, this.tamedBlocks, function (pellet: FoodPellet, block: Block) {
+                block.consume(pellet);
+            });
+            this.physics.arcade.collide(this.foodPellets, this.wildBlocks, function (pellet: FoodPellet, block: Block) {
+                block.consume(pellet);
+            });
         }
-
-
 
         render() {
             this.wildBlocks.forEachAlive((block: Block) => {
