@@ -125,32 +125,43 @@
 
         chaseBehavior() {
             var target = this.spotTarget(this.arena.wildBlocks);
-            var closestFood = this.spotTarget(this.arena.foodPellets);
+            
+            this.target = target;            
 
-            this.target = target;
-            this.closestFood = closestFood;
-
-            var closestTargetDistance = target == null ? null : Math.abs(this.game.physics.arcade.distanceBetween(this, target));
-            var closestFoodDistance = closestFood == null ? null : Math.abs(this.game.physics.arcade.distanceBetween(this, closestFood));
-
-            if (target && (closestFoodDistance == null || closestTargetDistance <= closestFoodDistance)) {
+            if (target) {
                 this.game.physics.arcade.accelerateToObject(this, target, this.acceleration, this.maxSpeed, this.maxSpeed);
-                this.game.debug.text("Target acquired", 32, 32);
-
-            } else if (closestFood) {
-                this.game.physics.arcade.accelerateToObject(this, closestFood, this.acceleration, this.maxSpeed, this.maxSpeed);
-                this.game.debug.text("Food acquired", 32, 32);
-
-            } else {
-                if (this.body.acceleration.x == 0 || this.changeAcceleration-- <= 0) {
-                    this.body.acceleration.x = Math.random() * this.acceleration - (this.acceleration / 2);
-                    this.body.acceleration.y = Math.random() * this.acceleration - (this.acceleration / 2);
-                    this.changeAcceleration = 200;
-                }
+            } else if (!this.feedBehavior()) {
+                //tamed blocks wander fast ... maybe they should be prowling
+                this.wanderBehavior(1);
             }
 
-            this.rotateBehavior(this.x + this.body.acceleration.x, this.y + this.body.acceleration.y);
+            this.rotateToDirectionOfTravel();
         }
+
+        wanderBehavior(speedMultiplier: number = 1) {
+            if (this.changeAcceleration-- <= 0) {
+
+                var accel = this.acceleration * speedMultiplier;
+                this.body.acceleration.x = Math.random() * accel - (accel / 2);
+                this.body.acceleration.y = Math.random() * accel - (accel / 2);
+                this.changeAcceleration = 200;
+
+            }
+        }
+
+        feedBehavior(): boolean {
+            var closestFood = this.spotTarget(this.arena.foodPellets);
+
+            this.closestFood = closestFood;
+
+            if (closestFood) {
+                this.game.physics.arcade.accelerateToObject(this, closestFood, this.acceleration, this.maxSpeed, this.maxSpeed);
+
+                return true;
+            }
+
+            return false;
+        }        
 
         fleeBehavior() {
             var target = this.spotTarget(this.arena.tamedBlocks);
@@ -159,20 +170,18 @@
                 var targetX = this.x - (target.x - this.x);
                 var targetY = this.y - (target.y - this.y);
                 this.game.physics.arcade.accelerateToXY(this, targetX, targetY, this.acceleration, this.maxSpeed, this.maxSpeed);
-            } else {
-                if (this.body.acceleration.x == 0 || this.changeAcceleration-- <= 0) {
-                    this.body.acceleration.x = Math.random() * (this.acceleration / 10) - (this.acceleration / 2 / 10);
-                    this.body.acceleration.y = Math.random() * (this.acceleration / 10) - (this.acceleration / 2 / 10);
-                    this.changeAcceleration = 200;
-                }
+            } else if (!this.feedBehavior()) {
+                //wild blocks wander slowly
+                this.wanderBehavior(.1);
             }
 
-            this.rotateBehavior(this.x + this.body.acceleration.x, this.y + this.body.acceleration.y);
+            this.rotateToDirectionOfTravel();
         };
 
-        rotateBehavior(x: number, y: number) {
-            
-            this.rotation = this.game.physics.arcade.angleToXY(this, x, y) + (Math.PI / 2);
+        rotateToDirectionOfTravel() {
+            if (this.body.acceleration.x != 0 || this.body.acceleration.y != 0) {
+                this.rotation = this.game.physics.arcade.angleToXY(this, this.x + this.body.acceleration.x, this.y + this.body.acceleration.y) + (Math.PI / 2);
+            }
             
         }
     }
