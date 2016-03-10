@@ -18,18 +18,22 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="app.css" />
+    <Content Include="assets\foodPellet.png" />
+    <Content Include="assets\mouth.png" />
     <Content Include="assets\tamed.png" />
     <Content Include="assets\untamed.png" />
     <Content Include="index.html" />
-    <Content Include="phaser.js" />
+    <Content Include="engine\phaser.js" />
     <Content Include="web.config" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="app.ts" />
-    <TypeScriptCompile Include="block.ts" />
-    <TypeScriptCompile Include="p2.d.ts" />
-    <TypeScriptCompile Include="phaser.d.ts" />
-    <TypeScriptCompile Include="pixi.d.ts" />
+    <TypeScriptCompile Include="game\base-object.ts" />
+    <TypeScriptCompile Include="game\food-pellet.ts" />
+    <TypeScriptCompile Include="game\block.ts" />
+    <TypeScriptCompile Include="engine\p2.d.ts" />
+    <TypeScriptCompile Include="engine\phaser.d.ts" />
+    <TypeScriptCompile Include="engine\pixi.d.ts" />
   </ItemGroup>
   <ItemGroup>
     <None Include="web.Debug.config">
