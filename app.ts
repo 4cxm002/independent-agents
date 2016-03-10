@@ -26,7 +26,7 @@
             this.load.image('untamed', 'assets/untamed.png');
             this.load.image('tamed', 'assets/tamed.png');
             this.load.image('foodPellet', 'assets/foodPellet.png');
-            this.load.image('mouth', 'assets/mouth.png');
+            this.load.spritesheet('mouth', 'assets/mouth.png',20,10);
 
         }
 
@@ -47,7 +47,7 @@
             this.wildBlocks.enableBody = true;
             this.foodPellets.enableBody = true;
 
-            for (var i = 0; i < 2; i++) {
+            for (var i = 0; i < 20; i++) {
                 var block = new Block(this, Math.random() * 400, Math.random() * 100, Math.random() * 200);
             }
 
