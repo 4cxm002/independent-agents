@@ -35,7 +35,7 @@ var BlockTaming;
             this.tamedBlocks = this.add.group();
             this.tamedBlocks.enableBody = true;
             this.wildBlocks.enableBody = true;
-            for (var i = 0; i < 20; i++) {
+            for (var i = 0; i < 2; i++) {
                 this.wildBlocks.add(new BlockTaming.Block(this, Math.random() * 400, Math.random() * 100, Math.random() * 200));
             }
             this.tamingStarted = false;
@@ -47,6 +47,24 @@ var BlockTaming;
             });
             this.physics.arcade.collide(this.wildBlocks, this.wildBlocks);
             this.physics.arcade.collide(this.tamedBlocks, this.tamedBlocks);
+        };
+        Arena.prototype.render = function () {
+            var _this = this;
+            this.wildBlocks.forEachAlive(function (block) {
+                var circle = new Phaser.Circle(block.x, block.y, block.sight * 2);
+                // Draw debug tools
+                _this.game.debug.geom(circle, 'rgba(255,0,0,.5)');
+            }, this);
+            this.tamedBlocks.forEachAlive(function (block) {
+                var circle = new Phaser.Circle(block.x, block.y, block.sight * 2);
+                // Draw debug tools
+                _this.game.debug.geom(circle, 'rgba(0,255,0,.5)');
+                if (block.target) {
+                    var attn = new Phaser.Circle(block.x, block.y - 30, 20);
+                    // Draw debug tools
+                    _this.game.debug.geom(attn, 'rgba(0,0,255,1)');
+                }
+            }, this);
         };
         return Arena;
     })(Phaser.State);

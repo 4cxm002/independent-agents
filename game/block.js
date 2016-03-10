@@ -24,7 +24,10 @@ var BlockTaming;
             this.body.collideWorldBounds = true;
             this.body.maxVelocity.x = maxSpeed;
             this.body.maxVelocity.y = maxSpeed;
+            this.anchor.setTo(0.5, 0.5);
+            this.body.angularAcceleration = 1;
             this.inputEnabled = true;
+            this.input.enableDrag();
             var self;
             self = this;
             this.events.onInputDown.add(function () {
@@ -52,39 +55,43 @@ var BlockTaming;
             this.tamed = true;
             this.arena.moveToTamed(this);
         };
-        Block.prototype.chaseBehavior = function () {
+        Block.prototype.spotTarget = function (group) {
             var _this = this;
             var target;
             var shortestDistance = this.sight;
-            this.arena.wildBlocks.forEachAlive(function (wild) {
-                var distance = Math.abs(_this.game.physics.arcade.distanceBetween(_this, wild));
+            group.forEachAlive(function (member) {
+                var distance = Math.abs(_this.game.physics.arcade.distanceBetween(_this, member));
                 if (distance < shortestDistance) {
-                    shortestDistance = distance;
-                    target = wild;
+                    var angleBetween = Phaser.Math.radToDeg(_this.game.physics.arcade.angleBetween(_this, member));
+                    var offsetRotation = _this.angle - 90;
+                    var diff = Math.abs(angleBetween - offsetRotation);
+                    if (diff < 90 || diff > 270) {
+                        shortestDistance = distance;
+                        target = member;
+                    }
                 }
             }, this);
+            return target;
+        };
+        Block.prototype.chaseBehavior = function () {
+            var target = this.spotTarget(this.arena.wildBlocks);
+            this.target = target;
             if (target) {
                 this.game.physics.arcade.accelerateToObject(this, target, this.acceleration, this.maxSpeed, this.maxSpeed);
             }
             else {
-                if (this.body.acceleration.x == 0 || this.changeAcceleration-- <= 0) {
-                    this.body.acceleration.x = Math.random() * this.acceleration - (this.acceleration / 2);
-                    this.body.acceleration.y = Math.random() * this.acceleration - (this.acceleration / 2);
-                    this.changeAcceleration = 200;
-                }
+                //if (this.body.acceleration.x == 0 || this.changeAcceleration-- <= 0) {
+                //    this.body.acceleration.x = Math.random() * this.acceleration - (this.acceleration / 2);
+                //    this.body.acceleration.y = Math.random() * this.acceleration - (this.acceleration / 2);
+                //    this.changeAcceleration = 200;
+                //}
+                var body = this.body;
+                body.acceleration.multiply(0, 0);
+                body.velocity.multiply(0, 0);
             }
         };
         Block.prototype.fleeBehavior = function () {
-            var _this = this;
-            var target;
-            var shortestDistance = this.sight;
-            this.arena.tamedBlocks.forEachAlive(function (tamed) {
-                var distance = Math.abs(_this.game.physics.arcade.distanceBetween(_this, tamed));
-                if (distance < shortestDistance) {
-                    shortestDistance = distance;
-                    target = tamed;
-                }
-            }, this);
+            var target = this.spotTarget(this.arena.tamedBlocks);
             if (target) {
                 var targetX = this.x - (target.x - this.x);
                 var targetY = this.y - (target.y - this.y);
