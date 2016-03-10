@@ -67,16 +67,15 @@ var BlockTaming;
             this.target = target;
             if (target) {
                 this.game.physics.arcade.accelerateToObject(this, target, this.acceleration, this.maxSpeed, this.maxSpeed);
+                this.game.debug.text("Target acquired", 32, 32);
+                this.rotateBehavior(target, false);
             }
             else {
-                //if (this.body.acceleration.x == 0 || this.changeAcceleration-- <= 0) {
-                //    this.body.acceleration.x = Math.random() * this.acceleration - (this.acceleration / 2);
-                //    this.body.acceleration.y = Math.random() * this.acceleration - (this.acceleration / 2);
-                //    this.changeAcceleration = 200;
-                //}
-                var body = this.body;
-                body.acceleration.multiply(0, 0);
-                body.velocity.multiply(0, 0);
+                if (this.body.acceleration.x == 0 || this.changeAcceleration-- <= 0) {
+                    this.body.acceleration.x = Math.random() * this.acceleration - (this.acceleration / 2);
+                    this.body.acceleration.y = Math.random() * this.acceleration - (this.acceleration / 2);
+                    this.changeAcceleration = 200;
+                }
             }
         };
         Block.prototype.fleeBehavior = function () {
@@ -85,7 +84,7 @@ var BlockTaming;
                 var targetX = this.x - (target.x - this.x);
                 var targetY = this.y - (target.y - this.y);
                 this.game.physics.arcade.accelerateToXY(this, targetX, targetY, this.acceleration, this.maxSpeed, this.maxSpeed);
-                this.rotateBehavior(target);
+                this.rotateBehavior(target, true);
             }
             else {
                 if (this.body.acceleration.x == 0 || this.changeAcceleration-- <= 0) {
@@ -96,13 +95,13 @@ var BlockTaming;
             }
         };
         ;
-        Block.prototype.rotateBehavior = function (destination) {
-            var radians;
-            var degrees;
-            radians = this.game.physics.arcade.angleBetween(this, destination);
-            degrees = radians * (180 / Math.PI);
-            this.body.angle = degrees;
-            //this.game.physics.arcade.velocityFromAngle(degrees, this.acceleration, this.body.velocity);
+        Block.prototype.rotateBehavior = function (destination, isRunningAway) {
+            if (isRunningAway) {
+                this.rotation = this.game.physics.arcade.angleBetween(this, destination) - 90;
+            }
+            else {
+                this.rotation = this.game.physics.arcade.angleBetween(this, destination) + 90;
+            }
         };
         return Block;
     })(BlockTaming.BaseObject);
