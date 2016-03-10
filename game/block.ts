@@ -123,11 +123,11 @@
             var closestTargetDistance = target == null ? null : Math.abs(this.game.physics.arcade.distanceBetween(this, target));
             var closestFoodDistance = closestFood == null ? null : Math.abs(this.game.physics.arcade.distanceBetween(this, closestFood));
 
-            if (target && closestTargetDistance <= closestFoodDistance) {
+            if (target && (closestFoodDistance == null || closestTargetDistance <= closestFoodDistance)) {
                 this.game.physics.arcade.accelerateToObject(this, target, this.acceleration, this.maxSpeed, this.maxSpeed);
                 this.game.debug.text("Target acquired", 32, 32);
 
-            } else if (closestFood && closestFoodDistance <= closestTargetDistance) {
+            } else if (closestFood) {
                 this.game.physics.arcade.accelerateToObject(this, closestFood, this.acceleration, this.maxSpeed, this.maxSpeed);
                 this.game.debug.text("Food acquired", 32, 32);
 
