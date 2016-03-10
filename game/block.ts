@@ -120,18 +120,16 @@
 
             if (target) {
                 this.game.physics.arcade.accelerateToObject(this, target, this.acceleration, this.maxSpeed, this.maxSpeed);
-                this.game.debug.text("Target acquired", 32, 32);
-                this.rotateBehavior(target, false);
+                this.game.debug.text("Target acquired", 32, 32);                
             } else {
                 if (this.body.acceleration.x == 0 || this.changeAcceleration-- <= 0) {
                     this.body.acceleration.x = Math.random() * this.acceleration - (this.acceleration / 2);
                     this.body.acceleration.y = Math.random() * this.acceleration - (this.acceleration / 2);
-                    this.changeAcceleration = 200;
+                    this.changeAcceleration = 200;                    
                 }
-                //var body = <Phaser.Physics.Arcade.Body>this.body;
-                //body.acceleration.multiply(0, 0);
-                //body.velocity.multiply(0, 0);
             }
+
+            this.rotateBehavior(this.x + this.body.acceleration.x, this.y + this.body.acceleration.y, false);
         }          
 
         fleeBehavior() {
@@ -140,23 +138,24 @@
             if (target) {
                 var targetX = this.x - (target.x - this.x);
                 var targetY = this.y - (target.y - this.y);
-                this.game.physics.arcade.accelerateToXY(this, targetX, targetY, this.acceleration, this.maxSpeed, this.maxSpeed);
-                this.rotateBehavior(target, true);
+                this.game.physics.arcade.accelerateToXY(this, targetX, targetY, this.acceleration, this.maxSpeed, this.maxSpeed);                
             } else {
                 if (this.body.acceleration.x == 0 || this.changeAcceleration-- <= 0) {
                     this.body.acceleration.x = Math.random() * (this.acceleration / 10) - (this.acceleration / 2 / 10);
                     this.body.acceleration.y = Math.random() * (this.acceleration / 10) - (this.acceleration / 2 / 10);
                     this.changeAcceleration = 200;
-                }
+                }                
             }
+
+            this.rotateBehavior(this.x + this.body.acceleration.x, this.y + this.body.acceleration.y, false);
         };
 
-        rotateBehavior(destination: any, isRunningAway: boolean) {
+        rotateBehavior(x: number, y: number, isRunningAway: boolean) {
             if (isRunningAway) {
-                this.rotation = this.game.physics.arcade.angleBetween(this, destination) - (Math.PI / 2);
+                this.rotation = this.game.physics.arcade.angleToXY(this, x, y) - (Math.PI / 2);
             }
             else {
-                this.rotation = this.game.physics.arcade.angleBetween(this, destination) + (Math.PI / 2);
+                this.rotation = this.game.physics.arcade.angleToXY(this, x, y) + (Math.PI / 2);
             }
         }
     }
