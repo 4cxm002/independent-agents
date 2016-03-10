@@ -20,6 +20,7 @@ var BlockTaming;
             this.body.collideWorldBounds = true;
             this.anchor.setTo(0.5, 0.5);
             this.inputEnabled = true;
+            this.inputEnabled = true;
             this.input.enableDrag();
             //Custom properties
             this.arena = arena;
