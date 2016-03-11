@@ -21,6 +21,7 @@
 
         mouth: Phaser.Sprite;
         sensor: Phaser.Graphics;
+        healthBar: Phaser.Graphics;
 
         constructor(arena: Arena, maxSpeed: number, acceleration: number, sight: number) {
 
@@ -57,6 +58,10 @@
             this.sensor.arc(0, 0, Math.max(sight - 16, 0), 0, -Math.PI, true);
             this.sensor.endFill();
 
+            this.healthBar = this.game.add.graphics(0, 0);
+            this.addChild(this.healthBar);
+            this.redrawHealthBar();
+
             var self: Block;
             self = this;
 
@@ -79,6 +84,15 @@
             this.hunger = 0;
         }
 
+        redrawHealthBar() {
+            this.healthBar.clear();
+            this.healthBar.beginFill(0x000000, 1);
+            this.healthBar.drawRect(-13, 10, 26, 5);
+            this.healthBar.beginFill(0xFF3300, 1);
+            this.healthBar.drawRect(-12, 11, 24 * (Math.min(this.energy, 100) / 100), 3);
+            this.healthBar.endFill();
+        }
+
         tame() {
             this.loadTexture('tamed', 0);
             this.think = this.chaseBehavior;
@@ -93,7 +107,7 @@
 
         consume(pellet: FoodPellet) {
             if (pellet.overlap(this.mouth)) {
-                this.energy += pellet.nutrition;
+                this.diminishEnergy(pellet.nutrition);
                 this.hunger = Phaser.Math.clamp(100 - this.energy, 0, 100);
                 pellet.kill();
                 this.playBite();
@@ -106,6 +120,7 @@
 
         diminishEnergy(energy: number) {
             this.energy += energy;
+            this.redrawHealthBar();
             if (this.energy <= 0) {
                 this.kill();
             }
@@ -171,13 +186,14 @@
         }
 
         feedBehavior(): boolean {
-            //Use energy while preparing to feed
-            this.diminishEnergy(-0.01);
             var closestFood = this.spotTarget(this.arena.foodPellets);
 
             this.closestFood = closestFood;
 
             if (closestFood) {
+                //Use energy while attempting to feed
+                this.diminishEnergy(-0.01);
+
                 this.game.physics.arcade.accelerateToObject(this, closestFood, this.acceleration, this.maxSpeed, this.maxSpeed);
 
                 return true;
