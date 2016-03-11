@@ -51,13 +51,9 @@
             this.foodPellets.enableBody = true;
             this.eggs.enableBody = true;
 
-<<<<<<< HEAD
             for (var i = 0; i < 2; i++) {
-                var block = new Block(this, Math.random() * 400, Math.random() * 100, Math.random() * 200);
-=======
-            for (var i = 0; i < 20; i++) {
                 var block = new Block(this, Block.createRandomDnaString());
->>>>>>> 4340e414d0895ca9c82353add6551c82b6cbec1d
+
             }
 
             for (var i = 0; i < 20; i++) {

@@ -12,12 +12,9 @@
         hunger: number;
         gender: number;
         insanity: number;
-<<<<<<< HEAD
         energy: number;
+
         allChildren: List<Block>;
-=======
-        energy: number;        
->>>>>>> 4340e414d0895ca9c82353add6551c82b6cbec1d
 
         changeAcceleration: number;
         tamed: boolean;
