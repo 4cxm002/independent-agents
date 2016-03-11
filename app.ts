@@ -48,8 +48,8 @@
             this.wildBlocks.enableBody = true;
             this.foodPellets.enableBody = true;
 
-            for (var i = 0; i < 1; i++) {
-                var block = new Block(this, Math.random() * 400, Math.random() * 100, Math.random() * 200);
+            for (var i = 0; i < 20; i++) {
+                var block = new Block(this, Block.createRandomDnaString());
             }
 
             for (var i = 0; i < 20; i++) {

@@ -2,6 +2,7 @@
     export class Block extends BaseObject {
 
         //Relevant stats
+        dna: string;
         strength: number;
         acceleration: number;
         maxSpeed: number;
@@ -11,7 +12,7 @@
         hunger: number;
         gender: number;
         insanity: number;
-        energy: number;
+        energy: number;        
 
         changeAcceleration: number;
         tamed: boolean;
@@ -22,8 +23,34 @@
         mouth: Phaser.Sprite;
         sensor: Phaser.Graphics;
         healthBar: Phaser.Graphics;
+                
+        static createRandomDnaString(): string {
+            const maxDnaSize = 81;
 
-        constructor(arena: Arena, maxSpeed: number, acceleration: number, sight: number) {
+            var newDna = "";
+            while (newDna.length < maxDnaSize) {
+                newDna += Math.random() >= .5 ? "1" : "0";
+            }
+            return newDna;
+        }        
+
+        decode(dna: string) {
+            this.dna = dna;
+            this.strength = parseInt(dna.substr(0, 8), 2);
+            this.acceleration = parseInt(dna.substr(8, 8), 2);
+            this.maxSpeed = parseInt(dna.substr(16, 8), 2);
+            this.sight = parseInt(dna.substr(24, 8), 2);
+            this.vitality = parseInt(dna.substr(32, 8), 2);
+            this.aggression = parseInt(dna.substr(40, 8), 2);            
+            this.insanity = parseInt(dna.substr(48, 8), 2);
+
+            //tint is a color and is 3 bytes long
+            this.tint = parseInt(dna.substr(56, 24), 2);
+            
+            this.gender = parseInt(dna.substr(80, 1), 2);
+        }
+
+        constructor(arena: Arena, dna: string) {
 
             var randomX, randomY;
 
@@ -37,10 +64,12 @@
 
             super(arena, randomX, randomY, 'blockSprite', arena.wildBlocks);
 
+            this.decode(dna);
+
             this.body.bounce.y = 0.2;
             this.body.bounce.x = 0.2;
-            this.body.maxVelocity.x = maxSpeed;
-            this.body.maxVelocity.y = maxSpeed;
+            this.body.maxVelocity.x = this.maxSpeed;
+            this.body.maxVelocity.y = this.maxSpeed;
             var body = <Phaser.Physics.Arcade.Body>this.body;
             body.maxAngular = 100;
             this.body.allowRotation = true;
@@ -54,15 +83,13 @@
 
             this.sensor = this.game.add.graphics(0, 0);
             this.addChild(this.sensor);
-            this.sensor.beginFill(0xFF3300, .1);
-            this.sensor.arc(0, 0, Math.max(sight - 16, 0), 0, -Math.PI, true);
+            this.sensor.beginFill(this.tint, .1);
+            this.sensor.arc(0, 0, Math.max(this.sight - 16, 0), 0, -Math.PI, true);
             this.sensor.endFill();
 
             this.healthBar = this.game.add.graphics(0, 0);
             this.addChild(this.healthBar);
             this.redrawHealthBar();
-
-            this.tint = 0xFF0000;
 
             var self: Block;
             self = this;
@@ -79,9 +106,6 @@
             this.tamed = false;
             this.changeAcceleration = 100;
             this.think = this.fleeBehavior;
-            this.maxSpeed = maxSpeed;
-            this.acceleration = acceleration;
-            this.sight = sight;
             this.energy = 100;
             this.hunger = 0;
         }
