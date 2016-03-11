@@ -25,12 +25,11 @@
         text: any;
 
         preload() {
-
             this.load.image('untamed', 'assets/untamed.png');
             this.load.image('tamed', 'assets/tamed.png');
+            this.load.image('blockSprite', 'assets/blockSprite.png');
             this.load.image('foodPellet', 'assets/foodPellet.png');
             this.load.spritesheet('mouth', 'assets/mouth.png',20,10);
-
         }
 
         moveToTamed(block: Block) {
@@ -52,8 +51,13 @@
             this.foodPellets.enableBody = true;
             this.eggs.enableBody = true;
 
+<<<<<<< HEAD
             for (var i = 0; i < 2; i++) {
                 var block = new Block(this, Math.random() * 400, Math.random() * 100, Math.random() * 200);
+=======
+            for (var i = 0; i < 20; i++) {
+                var block = new Block(this, Block.createRandomDnaString());
+>>>>>>> 4340e414d0895ca9c82353add6551c82b6cbec1d
             }
 
             for (var i = 0; i < 20; i++) {
@@ -63,16 +67,11 @@
             this.tamingStarted = false;
 
             //Adds a simple 
-            this.foodCounter = 0;
-            this.game.time.events.loop(Phaser.Timer.SECOND, this.nextFoodCounter, this);
+            this.game.time.events.loop(Phaser.Timer.SECOND * 20, this.nextFoodCounter, this);
         }
 
         nextFoodCounter() {
-            this.foodCounter++;
-            if (this.foodCounter == 20) {
-                this.foodPellets.add(new FoodPellet(this, Math.random() * 100));
-                this.foodCounter = 0;
-            }
+            this.foodPellets.add(new FoodPellet(this, Math.random() * 100));                
         }
 
         update() {
@@ -98,9 +97,9 @@
         }
 
         render() {
-            this.tamedBlocks.forEachAlive((block: Block) => {
-                this.game.debug.body(block);
-            }, this);
+            //this.tamedBlocks.forEachAlive((block: Block) => {
+            //    this.game.debug.body(block);
+            //}, this);
         }
 
 
