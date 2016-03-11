@@ -35,7 +35,7 @@
             arena.physics.arcade.getObjectsAtLocation(randomX, randomY + 32, arena.wildBlocks).length > 0 ||
                 arena.physics.arcade.getObjectsAtLocation(randomX + 32, randomY + 32, arena.wildBlocks).length > 0);
 
-            super(arena, randomX, randomY, 'untamed', arena.wildBlocks);
+            super(arena, randomX, randomY, 'blockSprite', arena.wildBlocks);
 
             this.body.bounce.y = 0.2;
             this.body.bounce.x = 0.2;
@@ -61,6 +61,8 @@
             this.healthBar = this.game.add.graphics(0, 0);
             this.addChild(this.healthBar);
             this.redrawHealthBar();
+
+            this.tint = 0xFF0000;
 
             var self: Block;
             self = this;
@@ -93,8 +95,8 @@
             this.healthBar.endFill();
         }
 
-        tame() {
-            this.loadTexture('tamed', 0);
+        tame() {            
+            this.tint = 0x00FF00;
             this.think = this.chaseBehavior;
             this.tamed = true;
             this.arena.moveToTamed(this);

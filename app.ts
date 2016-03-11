@@ -26,6 +26,7 @@
         preload() {
             this.load.image('untamed', 'assets/untamed.png');
             this.load.image('tamed', 'assets/tamed.png');
+            this.load.image('blockSprite', 'assets/blockSprite.png');
             this.load.image('foodPellet', 'assets/foodPellet.png');
             this.load.spritesheet('mouth', 'assets/mouth.png',20,10);
         }
