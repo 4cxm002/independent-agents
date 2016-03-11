@@ -19,6 +19,7 @@
         wildBlocks: Phaser.Group;
         tamedBlocks: Phaser.Group;
         foodPellets: Phaser.Group;
+        eggs: Phaser.Group;
         tamingStarted: boolean;
         foodCounter: number;
         text: any;
@@ -44,12 +45,14 @@
             this.wildBlocks = this.add.group();            
             this.tamedBlocks = this.add.group();
             this.foodPellets = this.add.group();
+            this.eggs = this.add.group();
 
             this.tamedBlocks.enableBody = true;
             this.wildBlocks.enableBody = true;
             this.foodPellets.enableBody = true;
+            this.eggs.enableBody = true;
 
-            for (var i = 0; i < 1; i++) {
+            for (var i = 0; i < 2; i++) {
                 var block = new Block(this, Math.random() * 400, Math.random() * 100, Math.random() * 200);
             }
 
@@ -78,6 +81,7 @@
                 if (tamed.mouth.overlap(wild)) {
                     tamed.playBite();
                     wild.tame();
+                    new Egg(self, tamed, wild);
                 }
             });
             this.physics.arcade.collide(this.wildBlocks, this.wildBlocks);

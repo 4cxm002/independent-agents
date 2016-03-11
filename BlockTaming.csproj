@@ -18,6 +18,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="app.css" />
+    <Content Include="assets\egg.png" />
     <Content Include="assets\foodPellet.png" />
     <Content Include="assets\mouth.png" />
     <Content Include="assets\tamed.png" />
@@ -28,7 +29,9 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="app.ts" />
+    <TypeScriptCompile Include="custom\list.ts" />
     <TypeScriptCompile Include="game\base-object.ts" />
+    <TypeScriptCompile Include="game\egg.ts" />
     <TypeScriptCompile Include="game\food-pellet.ts" />
     <TypeScriptCompile Include="game\block.ts" />
     <TypeScriptCompile Include="engine\p2.d.ts" />

@@ -12,6 +12,7 @@
         gender: number;
         insanity: number;
         energy: number;
+        allChildren: List<Block>;
 
         changeAcceleration: number;
         tamed: boolean;
