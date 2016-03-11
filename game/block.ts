@@ -99,8 +99,16 @@
                 this.playBite();
             }
         }
+
         playBite() {
             this.mouth.animations.play('eat', 75, false);
+        }
+
+        diminishEnergy(energy: number) {
+            this.energy += energy;
+            if (this.energy <= 0) {
+                this.kill();
+            }
         }
 
         spotTarget(group: Phaser.Group): BaseObject {
@@ -149,6 +157,8 @@
         }
 
         wanderBehavior(speedMultiplier: number = 1) {
+            //Use energy while wandering
+            this.diminishEnergy(-0.01);
             if (this.changeAcceleration-- <= 0) {
                 this.body.angularVelocity = 0;
 
@@ -161,6 +171,8 @@
         }
 
         feedBehavior(): boolean {
+            //Use energy while preparing to feed
+            this.diminishEnergy(-0.01);
             var closestFood = this.spotTarget(this.arena.foodPellets);
 
             this.closestFood = closestFood;
@@ -175,6 +187,8 @@
         }        
 
         fleeBehavior() {
+            //Use more energy while fleeing
+            this.diminishEnergy(-0.02);
             var target = this.spotTarget(this.arena.tamedBlocks);
 
             if (target) {
@@ -208,6 +222,8 @@
         }
 
         prowlBehavior(): void {
+            //Use more energy while prowling
+            this.diminishEnergy(-0.02);
             if (this.changeAcceleration-- <= 0) {
 
                 var body = <Phaser.Physics.Arcade.Body>this.body;
