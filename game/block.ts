@@ -40,6 +40,9 @@
             this.body.bounce.x = 0.2;
             this.body.maxVelocity.x = maxSpeed;
             this.body.maxVelocity.y = maxSpeed;
+            var body = <Phaser.Physics.Arcade.Body>this.body;
+            body.maxAngular = 100;
+            this.body.allowRotation = true;
 
             //create mouth for eating
             this.mouth = this.game.add.sprite(-10, -17, 'mouth');
@@ -124,15 +127,22 @@
         }
 
         chaseBehavior() {
+            
             var target = this.spotTarget(this.arena.wildBlocks);
             
             this.target = target;            
 
             if (target) {
+                this.body.angularVelocity = 0;
                 this.game.physics.arcade.accelerateToObject(this, target, this.acceleration, this.maxSpeed, this.maxSpeed);
             } else if (!this.feedBehavior()) {
                 //tamed blocks wander fast ... maybe they should be prowling
-                this.wanderBehavior(1);
+                if (Math.random() > .5) {                    
+                    this.wanderBehavior(1);
+                }
+                else {
+                    this.prowlBehavior();
+                }
             }
 
             this.rotateToDirectionOfTravel();
@@ -140,6 +150,7 @@
 
         wanderBehavior(speedMultiplier: number = 1) {
             if (this.changeAcceleration-- <= 0) {
+                this.body.angularVelocity = 0;
 
                 var accel = this.acceleration * speedMultiplier;
                 this.body.acceleration.x = Math.random() * accel - (accel / 2);
@@ -179,10 +190,37 @@
         };
 
         rotateToDirectionOfTravel() {
-            if (this.body.acceleration.x != 0 || this.body.acceleration.y != 0) {
-                this.rotation = this.game.physics.arcade.angleToXY(this, this.x + this.body.acceleration.x, this.y + this.body.acceleration.y) + (Math.PI / 2);
+            if (this.body.acceleration.x != 0 || this.body.acceleration.y != 0) {                
+
+                var desiredAngle = Phaser.Math.wrapAngle(this.game.physics.arcade.angleToXY(this, this.x + this.body.acceleration.x, this.y + this.body.acceleration.y) + (Math.PI / 2),true);
+                var angleDiff = Phaser.Math.wrapAngle(desiredAngle - this.rotation, true);
+                if (Math.abs(angleDiff) < Math.PI / 64) {
+                    this.rotation = desiredAngle;
+                } else {
+                    if (angleDiff < 0) {
+                        this.rotation -= (Math.PI / 64);
+                    } else {
+                        this.rotation += (Math.PI / 64);
+                    }
+                }
             }
             
+        }
+
+        prowlBehavior(): void {
+            if (this.changeAcceleration-- <= 0) {
+
+                var body = <Phaser.Physics.Arcade.Body>this.body;
+                //body.velocity.multiply(0, 0);
+                body.acceleration.multiply(0, 0);                                   
+                if (this.body.angularAcceleration == 0 || this.body.angularAcceleration == -50) {
+                    this.body.angularAcceleration = 50;
+                } else {
+                    this.body.angularAcceleration = -50;
+                }
+                this.changeAcceleration = 250;                
+
+            }
         }
     }
 }
