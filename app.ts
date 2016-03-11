@@ -20,6 +20,8 @@
         tamedBlocks: Phaser.Group;
         foodPellets: Phaser.Group;
         tamingStarted: boolean;
+        foodCounter: number;
+        text: any;
 
         preload() {
 
@@ -56,10 +58,19 @@
             }
 
             this.tamingStarted = false;
-            
-            
+
+            //Adds a simple 
+            this.foodCounter = 0;
+            this.game.time.events.loop(Phaser.Timer.SECOND, this.nextFoodCounter, this);
         }
 
+        nextFoodCounter() {
+            this.foodCounter++;
+            if (this.foodCounter == 20) {
+                this.foodPellets.add(new FoodPellet(this, Math.random() * 100));
+                this.foodCounter = 0;
+            }
+        }
 
         update() {
             var self = this;
@@ -87,6 +98,8 @@
                 this.game.debug.body(block);
             }, this);
         }
+
+
 
     }
 }

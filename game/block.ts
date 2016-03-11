@@ -188,7 +188,7 @@
 
         fleeBehavior() {
             //Use more energy while fleeing
-            this.diminishEnergy(-0.02);
+            this.diminishEnergy(-0.05);
             var target = this.spotTarget(this.arena.tamedBlocks);
 
             if (target) {
@@ -223,7 +223,7 @@
 
         prowlBehavior(): void {
             //Use more energy while prowling
-            this.diminishEnergy(-0.02);
+            this.diminishEnergy(-0.05);
             if (this.changeAcceleration-- <= 0) {
 
                 var body = <Phaser.Physics.Arcade.Body>this.body;
