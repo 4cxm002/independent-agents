@@ -51,24 +51,30 @@
             this.wildBlocks.enableBody = true;
             this.foodPellets.enableBody = true;
             this.eggs.enableBody = true;
-
-            for (var i = 0; i < 2; i++) {
-                var block = new Block(this, Block.createRandomDnaString());
-
+            
+            for (var i = 0; i < 1; i++) {
+                new Block(this, Block.createRandomDnaString());
             }
 
             for (var i = 0; i < 20; i++) {
                 new FoodPellet(this, Math.random() * 100);
-            }
+            }            
 
             this.tamingStarted = false;
 
             //Adds a simple 
-            this.game.time.events.loop(Phaser.Timer.SECOND * 20, this.nextFoodCounter, this);
+            this.game.time.events.loop(Phaser.Timer.SECOND * 5, this.nextFoodCounter, this);
+            this.game.time.events.loop(Phaser.Timer.SECOND * 5, this.keepPopulationUp, this);
         }
 
         nextFoodCounter() {
             this.foodPellets.add(new FoodPellet(this, Math.random() * 100));                
+        }
+
+        keepPopulationUp() {
+            if (this.wildBlocks.countLiving() + this.tamedBlocks.countLiving() < 1) {
+                new Block(this, Block.createRandomDnaString());
+            }
         }
 
         update() {

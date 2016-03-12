@@ -1,4 +1,5 @@
-﻿module BlockTaming {
+﻿
+module BlockTaming {
     export class Block extends BaseObject {
 
         //Relevant stats
@@ -22,10 +23,13 @@
         target: BaseObject;
         closestFood: BaseObject;
 
+        activeAction: () => number;
+        activeActionPriority: number;
+
         mouth: Phaser.Sprite;
         sensor: Phaser.Graphics;
         healthBar: Phaser.Graphics;
-                
+                                
         static createRandomDnaString(): string {
             const maxDnaSize = 81;
 
@@ -91,7 +95,6 @@
 
             this.healthBar = this.game.add.graphics(0, 0);
             this.addChild(this.healthBar);
-            this.redrawHealthBar();
 
             var self: Block;
             self = this;
@@ -107,9 +110,45 @@
             //Custom properties
             this.tamed = false;
             this.changeAcceleration = 100;
-            this.think = this.fleeBehavior;
-            this.energy = 100;
+            this.energy = 100;            
             this.hunger = 0;
+            this.think = this.evaluateOptions;
+
+            this.redrawHealthBar();
+        }
+
+        evaluateOptions() {
+
+            //Step 1: if we are actively doing something, see if we should continue doing it
+            if (this.activeAction && this.activeActionPriority > 0) {
+                if (this.activeAction() < 1) {
+                    this.activeAction = null;
+                }
+            } else {
+                var possibleActions = new ActionQueue<{(): number }>();
+                possibleActions.Add(this.hunger * 2, this.feedBehavior);
+                possibleActions.Add(this.aggression, this.chaseBehavior);
+                possibleActions.Add(256 - this.vitality, this.prowlBehavior);
+                possibleActions.Add(256 - this.strength, this.fleeBehavior);
+                possibleActions.Add(this.insanity - this.hunger, this.wanderBehavior);
+                                
+                var executionResult: number = -1;
+                do {
+                    var action = possibleActions.Shift();
+                    if (action) {
+                        executionResult = action.bind(this)();
+                        if (executionResult == 1) {
+                            this.activeAction = action.bind(this);                            
+                            console.log('opted to ' + action);
+                        }
+                        this.activeActionPriority = executionResult;
+
+                    } else {
+                        executionResult = 1;
+                        this.activeAction = undefined;                        
+                    }
+                } while (executionResult < 0)
+            }
         }
 
         redrawHealthBar() {
@@ -122,8 +161,7 @@
         }
 
         tame() {            
-            this.tint = 0x00FF00;
-            this.think = this.chaseBehavior;
+            this.tint = 0x00FF00;            
             this.tamed = true;
             this.arena.moveToTamed(this);
 
@@ -135,8 +173,7 @@
 
         consume(pellet: FoodPellet) {
             if (pellet.overlap(this.mouth)) {
-                this.diminishEnergy(pellet.nutrition);
-                this.hunger = Phaser.Math.clamp(100 - this.energy, 0, 100);
+                this.diminishEnergy(pellet.nutrition);                
                 pellet.kill();
                 this.playBite();
             }
@@ -144,10 +181,14 @@
 
         playBite() {
             this.mouth.animations.play('eat', 75, false);
+
+            //uhhh reset their action when they bite something
+            this.activeAction = undefined;
         }
 
         diminishEnergy(energy: number) {
             this.energy += energy;
+            this.hunger = 256 - Phaser.Math.clamp(this.energy / 100 * 256, 0, 256);
             this.redrawHealthBar();
             if (this.energy <= 0) {
                 this.kill();
@@ -159,16 +200,18 @@
             var shortestDistance = this.sight;
 
             group.forEachAlive((member: BaseObject) => {
-                var distance = Math.abs(this.game.physics.arcade.distanceBetween(this, member));
-                if (distance < shortestDistance) {
-                    var angleBetween = Phaser.Math.radToDeg(this.game.physics.arcade.angleBetween(this, member));
-                    var offsetRotation = this.angle - 90;
+                if (this != member) {
+                    var distance = Math.abs(this.game.physics.arcade.distanceBetween(this, member));
+                    if (distance < shortestDistance) {
+                        var angleBetween = Phaser.Math.radToDeg(this.game.physics.arcade.angleBetween(this, member));
+                        var offsetRotation = this.angle - 90;
 
-                    var diff = Math.abs(angleBetween - offsetRotation);
+                        var diff = Math.abs(angleBetween - offsetRotation);
 
-                    if (diff < 90 || diff > 270) {
-                        shortestDistance = distance;
-                        target = member;
+                        if (diff < 90 || diff > 270) {
+                            shortestDistance = distance;
+                            target = member;
+                        }
                     }
                 }
             }, this);
@@ -184,36 +227,31 @@
             this.target = target;            
 
             if (target) {
+
+                this.diminishEnergy(-0.05);
                 this.body.angularVelocity = 0;
                 this.game.physics.arcade.accelerateToObject(this, target, this.acceleration, this.maxSpeed, this.maxSpeed);
-            } else if (!this.feedBehavior()) {
-                //tamed blocks wander fast ... maybe they should be prowling
-                if (Math.random() > .5) {                    
-                    this.wanderBehavior(1);
-                }
-                else {
-                    this.prowlBehavior();
-                }
-            }
+                this.rotateToDirectionOfTravel();
 
-            this.rotateToDirectionOfTravel();
+                return 1;
+            }
+            
+            return -1;            
         }
 
-        wanderBehavior(speedMultiplier: number = 1) {
+        wanderBehavior(speedMultiplier: number = .5) : number {
             //Use energy while wandering
-            this.diminishEnergy(-0.01);
-            if (this.changeAcceleration-- <= 0) {
-                this.body.angularVelocity = 0;
+            this.diminishEnergy(-0.01);            
 
-                var accel = this.acceleration * speedMultiplier;
-                this.body.acceleration.x = Math.random() * accel - (accel / 2);
-                this.body.acceleration.y = Math.random() * accel - (accel / 2);
-                this.changeAcceleration = 200;
-
-            }
+            var accel = this.acceleration * speedMultiplier;
+            this.body.acceleration.x = Math.random() * accel - (accel / 2);
+            this.body.acceleration.y = Math.random() * accel - (accel / 2);
+            this.rotateToDirectionOfTravel();
+                
+            return 0;
         }
 
-        feedBehavior(): boolean {
+        feedBehavior(): number {
             var closestFood = this.spotTarget(this.arena.foodPellets);
 
             this.closestFood = closestFood;
@@ -223,28 +261,29 @@
                 this.diminishEnergy(-0.01);
 
                 this.game.physics.arcade.accelerateToObject(this, closestFood, this.acceleration, this.maxSpeed, this.maxSpeed);
+                this.rotateToDirectionOfTravel();
 
-                return true;
+                return 1;
             }
 
-            return false;
+            return -1;
         }        
 
-        fleeBehavior() {
-            //Use more energy while fleeing
-            this.diminishEnergy(-0.05);
+        fleeBehavior() : number {
             var target = this.spotTarget(this.arena.tamedBlocks);
 
             if (target) {
+                //Use more energy while fleeing
+                this.diminishEnergy(-0.05);
+
                 var targetX = this.x - (target.x - this.x);
                 var targetY = this.y - (target.y - this.y);
                 this.game.physics.arcade.accelerateToXY(this, targetX, targetY, this.acceleration, this.maxSpeed, this.maxSpeed);
-            } else if (!this.feedBehavior()) {
-                //wild blocks wander slowly
-                this.wanderBehavior(.1);
+                this.rotateToDirectionOfTravel();
+                return 1;            
             }
 
-            this.rotateToDirectionOfTravel();
+            return -1;
         };
 
         rotateToDirectionOfTravel() {
@@ -265,14 +304,15 @@
             
         }
 
-        prowlBehavior(): void {
+        prowlBehavior(): number {
             //Use more energy while prowling
             this.diminishEnergy(-0.05);
             if (this.changeAcceleration-- <= 0) {
 
-                var body = <Phaser.Physics.Arcade.Body>this.body;
-                //body.velocity.multiply(0, 0);
-                body.acceleration.multiply(0, 0);                                   
+                var accel = this.acceleration * .25;
+                this.body.acceleration.x = Math.random() * accel - (accel / 2);
+                this.body.acceleration.y = Math.random() * accel - (accel / 2);
+                                                               
                 if (this.body.angularAcceleration == 0 || this.body.angularAcceleration == -50) {
                     this.body.angularAcceleration = 50;
                 } else {
@@ -281,6 +321,7 @@
                 this.changeAcceleration = 250;                
 
             }
+            return 0;
         }
     }
 }

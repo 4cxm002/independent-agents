@@ -32,6 +32,7 @@
     <TypeScriptCompile Include="app.ts" />
     <TypeScriptCompile Include="custom\list.ts" />
     <TypeScriptCompile Include="game\base-object.ts" />
+    <TypeScriptCompile Include="game\actionQueue.ts" />
     <TypeScriptCompile Include="game\egg.ts" />
     <TypeScriptCompile Include="game\food-pellet.ts" />
     <TypeScriptCompile Include="game\block.ts" />
