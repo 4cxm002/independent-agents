@@ -10,13 +10,13 @@
             this.firstParent = firstParent;
             this.secondParent = secondParent;
 
-            this.game.time.events.add(Phaser.Timer.SECOND * 10, this.hatch, arena, this);
+            this.game.time.events.add(Phaser.Timer.SECOND * 10, this.hatch, this);
         }
 
-        hatch(arena: Arena) {
+        hatch() {
             //TODO: Assign stats for base block
             var childDna = Block.createChildFromParents(this.firstParent, this.secondParent);
-            new Block(arena, childDna);
+            new Block(this.arena, childDna);
         }
     }
 
