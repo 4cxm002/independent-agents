@@ -1,15 +1,22 @@
 ﻿module BlockTaming {
     export class Egg extends BaseObject {
 
-        constructor(arena: Arena, firstParent: BaseObject, secondParent: BaseObject) {
+        firstParent: Block;
+        secondParent: Block;
 
+        constructor(arena: Arena, firstParent: Block, secondParent: Block) {
             super(arena, firstParent.x, firstParent.y, 'egg', arena.eggs);
                        
-            this.game.time.events.add(Phaser.Timer.SECOND * 60, this.hatch, firstParent, secondParent);
+            this.firstParent = firstParent;
+            this.secondParent = secondParent;
+
+            this.game.time.events.add(Phaser.Timer.SECOND * 10, this.hatch, arena, this);
         }
 
-        hatch(firstParent: BaseObject, secondParent: BaseObject) {
+        hatch(arena: Arena) {
             //TODO: Assign stats for base block
+            var childDna = Block.createChildFromParents(this.firstParent, this.secondParent);
+            new Block(arena, childDna);
         }
     }
 

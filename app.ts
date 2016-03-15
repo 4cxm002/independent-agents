@@ -52,7 +52,7 @@
             this.foodPellets.enableBody = true;
             this.eggs.enableBody = true;
             
-            for (var i = 0; i < 1; i++) {
+            for (var i = 0; i < 4; i++) {
                 new Block(this, Block.createRandomDnaString());
             }
 
@@ -72,7 +72,7 @@
         }
 
         keepPopulationUp() {
-            if (this.wildBlocks.countLiving() + this.tamedBlocks.countLiving() < 1) {
+            if (this.wildBlocks.countLiving() + this.tamedBlocks.countLiving() < 4) {
                 new Block(this, Block.createRandomDnaString());
             }
         }

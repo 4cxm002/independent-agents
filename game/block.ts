@@ -29,7 +29,22 @@ module BlockTaming {
         mouth: Phaser.Sprite;
         sensor: Phaser.Graphics;
         healthBar: Phaser.Graphics;
-                                
+        
+        static createChildFromParents(firstParent: Block, secondParent: Block): string {
+            const maxDnaSize = 81;
+
+            var childDna = "";
+            for (var i = 0; i < maxDnaSize; i++) {
+                if (Math.random() >= .5) {
+                    childDna += firstParent.dna.substr(i, 1);
+                }
+                else {
+                    childDna += secondParent.dna.substr(i, 1);
+                }
+            }
+            return childDna;
+        }
+                           
         static createRandomDnaString(): string {
             const maxDnaSize = 81;
 
