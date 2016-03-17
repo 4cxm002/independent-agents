@@ -17,6 +17,7 @@
             //TODO: Assign stats for base block
             var childDna = Block.createChildFromParents(this.firstParent, this.secondParent);
             new Block(this.arena, childDna);
+            this.kill();
         }
     }
 
