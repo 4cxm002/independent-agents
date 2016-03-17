@@ -24,6 +24,11 @@
     <Content Include="assets\mouth.png" />
     <Content Include="assets\tamed.png" />
     <Content Include="assets\untamed.png" />
+    <Content Include="game\actionQueue.js" />
+    <Content Include="game\base-object.js" />
+    <Content Include="game\block.js" />
+    <Content Include="game\egg.js" />
+    <Content Include="game\food-pellet.js" />
     <Content Include="index.html" />
     <Content Include="engine\phaser.js" />
     <Content Include="web.config" />
