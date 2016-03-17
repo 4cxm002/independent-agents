@@ -19,15 +19,18 @@
         wildBlocks: Phaser.Group;
         tamedBlocks: Phaser.Group;
         foodPellets: Phaser.Group;
+        eggs: Phaser.Group;
         tamingStarted: boolean;
+        foodCounter: number;
+        text: any;
 
         preload() {
-
             this.load.image('untamed', 'assets/untamed.png');
             this.load.image('tamed', 'assets/tamed.png');
+            this.load.image('egg', 'assets/egg.png');
+            this.load.image('blockSprite', 'assets/blockSprite.png');
             this.load.image('foodPellet', 'assets/foodPellet.png');
             this.load.spritesheet('mouth', 'assets/mouth.png',20,10);
-
         }
 
         moveToTamed(block: Block) {
@@ -42,22 +45,37 @@
             this.wildBlocks = this.add.group();            
             this.tamedBlocks = this.add.group();
             this.foodPellets = this.add.group();
+            this.eggs = this.add.group();
 
             this.tamedBlocks.enableBody = true;
             this.wildBlocks.enableBody = true;
             this.foodPellets.enableBody = true;
-
-            for (var i = 0; i < 20; i++) {
-                var block = new Block(this, Math.random() * 400, Math.random() * 100, Math.random() * 200);
+            this.eggs.enableBody = true;
+            
+            for (var i = 0; i < 4; i++) {
+                new Block(this, Block.createRandomDnaString());
             }
 
             for (var i = 0; i < 20; i++) {
                 new FoodPellet(this, Math.random() * 100);
-            }
+            }            
 
             this.tamingStarted = false;
+
+            //Adds a simple 
+            this.game.time.events.loop(Phaser.Timer.SECOND * 5, this.nextFoodCounter, this);
+            this.game.time.events.loop(Phaser.Timer.SECOND * 5, this.keepPopulationUp, this);
         }
 
+        nextFoodCounter() {
+            this.foodPellets.add(new FoodPellet(this, Math.random() * 100));                
+        }
+
+        keepPopulationUp() {
+            if (this.wildBlocks.countLiving() + this.tamedBlocks.countLiving() < 4) {
+                new Block(this, Block.createRandomDnaString());
+            }
+        }
 
         update() {
             var self = this;
@@ -65,6 +83,7 @@
                 if (tamed.mouth.overlap(wild)) {
                     tamed.playBite();
                     wild.tame();
+                    new Egg(self, tamed, wild);
                 }
             });
             this.physics.arcade.collide(this.wildBlocks, this.wildBlocks);
@@ -81,30 +100,12 @@
         }
 
         render() {
-            this.wildBlocks.forEachAlive((block: Block) => {
-
-                var circle = new Phaser.Circle(block.x, block.y, block.sight * 2);
-                
-                // Draw debug tools
-                this.game.debug.geom(circle, 'rgba(255,0,0,.05)');
-            }, this);
-
-            this.tamedBlocks.forEachAlive((block: Block) => {
-
-                var circle = new Phaser.Circle(block.x, block.y, block.sight * 2);
-                
-                // Draw debug tools
-                this.game.debug.geom(circle, 'rgba(0,255,0,.05)');
-
-                if (block.target) {
-                    var attn = new Phaser.Circle(block.x, block.y - 30, 20);
-                
-                    // Draw debug tools
-                    this.game.debug.geom(attn, 'rgba(0,0,255,1)');
-                }
-            }, this);
-
+            //this.tamedBlocks.forEachAlive((block: Block) => {
+            //    this.game.debug.body(block);
+            //}, this);
         }
+
+
 
     }
 }
